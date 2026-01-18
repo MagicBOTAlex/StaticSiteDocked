@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  zcollection:
+    build: .
+    container_name: zcollection-demo
+    stdin_open: true   
+    tty: true          
+    environment:
+        REPO_URL: "https://github.com/MagicBOTAlex/ZCollection"
+    ports:
+      - 1111:4173
+    volumes:
+      - nix-cache:/nix
+
+volumes:
+  nix-cache:

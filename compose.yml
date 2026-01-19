@@ -2,16 +2,20 @@ version: '3.8'
 
 services:
   zcollection:
-    build: .
+    image: docker.deprived.dev/static-site
     container_name: zcollection-demo
     stdin_open: true   
     tty: true          
     environment:
         REPO_URL: "https://github.com/MagicBOTAlex/ZCollection"
+        BRANCH: "master"
+        FRESH_PULL: false
     ports:
       - 1111:4173
     volumes:
       - nix-cache:/nix
+      - node_modules:/backend/node_modules
 
 volumes:
   nix-cache:
+  node_modules:

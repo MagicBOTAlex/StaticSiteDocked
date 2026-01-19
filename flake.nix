@@ -13,11 +13,13 @@
         pocketbase-py = py.buildPythonPackage rec {
           pname = "pocketbase";
           version = "0.15.0";
-          src = pkgs.fetchPypi { inherit pname version; sha256 = "sha256-3TqM4g2gmoP14KW1X8ctQIdPViwV2IbV7FoHLjRtP9k="; };
+          src = pkgs.fetchPypi {
+            inherit pname version;
+            sha256 = "sha256-3TqM4g2gmoP14KW1X8ctQIdPViwV2IbV7FoHLjRtP9k=";
+          };
           pyproject = true;
           nativeBuildInputs = [ py.poetry-core ];
-          propagatedBuildInputs = with py;
-            [ httpx ];
+          propagatedBuildInputs = with py; [ httpx ];
           doCheck = false;
         };
         pythonEnv = pkgs.python3.withPackages (ps:
@@ -42,8 +44,19 @@
             exec ${pythonEnv}/bin/python main.py
           '';
         };
-      in
-      {
+
+        publish = pkgs.writeShellApplication {
+          name = "publish";
+          runtimeInputs = [ pkgs.podman ];
+          text = ''
+            set -euo pipefail
+
+            docker build -t docker.deprived.dev/static-site .
+            docker push docker.deprived.dev/static-site
+          '';
+        };
+
+      in {
         devShells.default = pkgs.mkShell {
           buildInputs = with pkgs; [
             pythonEnv
@@ -101,6 +114,10 @@
           default = {
             type = "app";
             program = "${start}/bin/start";
+          };
+          publish = {
+            type = "app";
+            program = "${publish}/bin/publish";
           };
         };
       });

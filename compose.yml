@@ -9,12 +9,12 @@ services:
     environment:
         REPO_URL: "https://github.com/MagicBOTAlex/ZCollection"
         BRANCH: "master"
-        FRESH_PULL: false
+        # FRESH_PULL
     ports:
       - 1111:4173
     volumes:
       - nix-cache:/nix
-      - node_modules:/backend/node_modules
+      - node_modules:/node_modules
 
 volumes:
   nix-cache:

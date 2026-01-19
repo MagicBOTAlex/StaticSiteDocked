@@ -1,4 +1,6 @@
 #!/bin/sh
+export DOCKER=true
+export NPM_CONFIG_STORE_DIR=/node_modules
 
 if [ -z "$REPO_URL" ]; then
 	echo "Missing 'REPO_URL' environment variable"
@@ -18,7 +20,7 @@ if [ -n "$FRESH_PULL" ] || [ ! -d "/backend/.git" ]; then
 	rm -fr /backend
 
 	# Clone specific branch
-	gix clone -b "$BRANCH" "$REPO_URL" /backend/
+	git clone -b "$BRANCH" "$REPO_URL" /backend/
 
 else
 	echo "[Backend BOOT] Repo exists. Force resetting to remote..."

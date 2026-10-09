@@ -7,11 +7,13 @@ services:
     stdin_open: true   
     tty: true          
     environment:
-        REPO_URL: "https://github.com/MagicBOTAlex/ZCollection"
-        BRANCH: "master"
-        # FRESH_PULL
+      REPO_URL: "https://github.com/MagicBOTAlex/ZCollection"
+      BRANCH: "master"
+      # GITHUB_TOKEN: "" # Optional: token for private repos / auth on pull
+      # FRESH_PULL
+      # - NIX_RUN: "build-run" # Not supported lol
     ports:
-      - 1111:4173
+      - 7577:4173
     volumes:
       - nix-cache:/nix
       - node_modules:/node_modules

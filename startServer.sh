@@ -12,6 +12,17 @@ if [ -z "$BRANCH" ]; then
 	exit 1
 fi
 
+# If a GitHub token is provided, rewrite https://github.com/ URLs to embed
+# credentials. Applied via the environment so nothing is persisted to
+# .git/config. x-access-token is the username GitHub expects for token auth.
+if [ -n "$GITHUB_TOKEN" ]; then
+	echo "[Backend BOOT] GITHUB_TOKEN set. Enabling authenticated git access."
+	GIT_CONFIG_COUNT=1
+	GIT_CONFIG_KEY_0="url.https://x-access-token:${GITHUB_TOKEN}@github.com/.insteadOf"
+	GIT_CONFIG_VALUE_0="https://github.com/"
+	export GIT_CONFIG_COUNT GIT_CONFIG_KEY_0 GIT_CONFIG_VALUE_0
+fi
+
 # CHECK: If FRESH_PULL is set OR the git repo doesn't exist yet
 if [ -n "$FRESH_PULL" ] || [ ! -d "/backend/.git" ]; then
 	echo "[Backend BOOT] FRESH_PULL defined or repo missing. Cloning from scratch..."

@@ -12,14 +12,17 @@ if [ -z "$BRANCH" ]; then
 	exit 1
 fi
 
-# If a GitHub token is provided, rewrite https://github.com/ URLs to embed
+# If a token is provided, rewrite https URLs for the repo's own host to embed
 # credentials. Applied via the environment so nothing is persisted to
-# .git/config. x-access-token is the username GitHub expects for token auth.
+# .git/config. x-access-token is accepted as the username by both GitHub and
+# self-hosted forges (e.g. Gitea at git.deprived.dev).
 if [ -n "$GITHUB_TOKEN" ]; then
 	echo "[Backend BOOT] GITHUB_TOKEN set. Enabling authenticated git access."
+	REPO_HOST="${REPO_URL#*://}"
+	REPO_HOST="${REPO_HOST%%/*}"
 	GIT_CONFIG_COUNT=1
-	GIT_CONFIG_KEY_0="url.https://x-access-token:${GITHUB_TOKEN}@github.com/.insteadOf"
-	GIT_CONFIG_VALUE_0="https://github.com/"
+	GIT_CONFIG_KEY_0="url.https://x-access-token:${GITHUB_TOKEN}@${REPO_HOST}/.insteadOf"
+	GIT_CONFIG_VALUE_0="https://${REPO_HOST}/"
 	export GIT_CONFIG_COUNT GIT_CONFIG_KEY_0 GIT_CONFIG_VALUE_0
 fi
 
@@ -41,6 +44,12 @@ else
 	git fetch --all
 	git reset --hard "origin/$BRANCH"
 	git clean -fd
+fi
+
+# If a .env was mounted/copied at the container root, put it in the repo
+if [ -f "/.env" ]; then
+	echo "[Backend BOOT] Copying /.env into /backend/.env"
+	cp /.env /backend/.env
 fi
 
 echo "[Backend BOOT] Entered repo"
